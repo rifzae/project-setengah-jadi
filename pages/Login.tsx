@@ -14,7 +14,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
     
     // CONTOH PASSWORD HARDCODED (Sederhana)
     // Username: admin, Password: 123
-    if (username === 'admin' && password === '123') {
+    if (username === 'kelompok6' && password === '123456') {
       localStorage.setItem('isLoggedIn', 'true'); // Simpan status login
       onLogin(true);
     } else {
