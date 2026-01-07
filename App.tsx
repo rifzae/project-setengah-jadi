@@ -1,10 +1,10 @@
-
 import React, { useState, useEffect } from 'react';
 import { Product, Sale, View } from './types';
 import Dashboard from './pages/Dashboard';
 import Inventory from './pages/Inventory';
 import POS from './pages/POS';
 import Reports from './pages/Reports';
+import Login from './pages/Login'; // Import halaman Login
 import Sidebar from './components/Sidebar';
 
 const INITIAL_PRODUCTS: Product[] = [
@@ -15,6 +15,12 @@ const INITIAL_PRODUCTS: Product[] = [
 ];
 
 const App: React.FC = () => {
+  // --- STATE LOGIN ---
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
+    // Cek apakah user pernah login sebelumnya (disimpan di localStorage)
+    return localStorage.getItem('isLoggedIn') === 'true';
+  });
+
   const [products, setProducts] = useState<Product[]>(() => {
     const saved = localStorage.getItem('retail_products');
     return saved ? JSON.parse(saved) : INITIAL_PRODUCTS;
@@ -58,6 +64,20 @@ const App: React.FC = () => {
     setProducts(prev => prev.filter(p => p.id !== id));
   };
 
+  // --- FUNGSI LOGOUT ---
+  const handleLogout = () => {
+    localStorage.removeItem('isLoggedIn'); // Hapus sesi
+    setIsAuthenticated(false);
+  };
+
+  // --- LOGIC TAMPILAN ---
+  
+  // Jika belum login, tampilkan halaman Login
+  if (!isAuthenticated) {
+    return <Login onLogin={setIsAuthenticated} />;
+  }
+
+  // Jika sudah login, tampilkan App Utama
   const renderContent = () => {
     switch (currentView) {
       case View.DASHBOARD:
@@ -94,8 +114,15 @@ const App: React.FC = () => {
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2 text-sm text-slate-500 bg-slate-100 px-3 py-1.5 rounded-full">
               <span className="w-2 h-2 rounded-full bg-green-500"></span>
-              Sistem Aktif
+              Admin
             </div>
+            {/* Tombol Logout Baru */}
+            <button 
+              onClick={handleLogout}
+              className="text-sm text-red-600 hover:text-red-700 font-medium px-3 py-1.5 border border-red-200 rounded-lg hover:bg-red-50 transition"
+            >
+              Logout
+            </button>
           </div>
         </header>
         <div className="p-8">
